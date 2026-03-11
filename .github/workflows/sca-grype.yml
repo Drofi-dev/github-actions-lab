@@ -1,0 +1,25 @@
+name: Task 5 - SCA using Grype
+
+on:
+  push:
+
+jobs:
+  sca:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: spdx-json
+          output-file: sbom.json
+
+      - name: Run Grype vulnerability scan
+        uses: anchore/scan-action@v3
+        with:
+          sbom: sbom.json
+          output-format: table
+          fail-build: false
