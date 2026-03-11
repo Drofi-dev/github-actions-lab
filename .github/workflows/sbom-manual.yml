@@ -1,0 +1,28 @@
+name: Task 3 - SBOM with manual Syft install
+
+on:
+  push:
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Verify Syft
+        run: syft version
+
+      - name: Generate SBOM for DVJA
+        run: syft dir:./dvja -o spdx-json=sbom-dvja.json
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-dvja
+          path: sbom-dvja.json
